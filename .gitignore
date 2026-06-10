@@ -1,0 +1,12 @@
+# Your real outreach list and logs — never commit these
+targets.csv
+already-messaged.csv
+removed.csv
+sent-log.json
+screenshots/
+
+# Saved LinkedIn login session — committing this would leak your account
+user-data/
+
+node_modules/
+.DS_Store

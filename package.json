@@ -1,0 +1,14 @@
+{
+  "name": "linkedin-messenger",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Low-volume, human-in-the-loop LinkedIn message helper (Playwright). You log in manually; it drafts + paces sends.",
+  "scripts": {
+    "preview": "node messenger.js",
+    "send": "node messenger.js --send"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

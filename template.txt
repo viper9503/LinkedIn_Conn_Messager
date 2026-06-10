@@ -1,0 +1,6 @@
+Hi {{firstName}}, {{note}}
+
+Would love to connect and hear more about what your team is working on. No worries if now's not the right time — appreciate you either way.
+
+Best,
+Jack

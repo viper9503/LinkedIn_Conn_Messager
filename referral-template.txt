@@ -1,0 +1,4 @@
+Hi {{firstName}}, good to be connected. I'll keep this short. I'm a software engineer with a background in AI/RAG and full-stack, currently in the middle of a job search. Would you be open to referring me for any relevant openings at {{company}}, or pointing me to the right person to talk to? Completely understand if the timing isn't right. Either way, glad we connected.
+
+Best,
+Manay
