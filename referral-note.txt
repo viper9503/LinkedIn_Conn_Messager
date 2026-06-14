@@ -1,0 +1,1 @@
+Hi {{firstName}}, I'm a software engineer (AI/RAG & full-stack) in the middle of a job search. Would you be open to referring me for any relevant openings at {{company}}, or pointing me to the right person? Totally understand if not. Best, Manay
