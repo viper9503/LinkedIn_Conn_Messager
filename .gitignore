@@ -1,9 +1,15 @@
 # Your real outreach list and logs — never commit these
 targets.csv
+targets-*.csv
 already-messaged.csv
 removed.csv
 sent-log.json
+invite-log.json
 screenshots/
+recon.json
+recon-*.json
+urls-*.txt
+OUTREACH-LOG.md
 
 # Saved LinkedIn login session — committing this would leak your account
 user-data/
