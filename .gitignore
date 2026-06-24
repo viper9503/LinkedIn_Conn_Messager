@@ -9,6 +9,8 @@ screenshots/
 recon.json
 recon-*.json
 urls-*.txt
+*-urls.txt
+canary-*.csv
 OUTREACH-LOG.md
 
 # Saved LinkedIn login session — committing this would leak your account

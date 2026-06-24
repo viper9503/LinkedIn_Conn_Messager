@@ -26,6 +26,21 @@ Shared infra:
 - `user-data/` — the persisted Chromium login profile, **shared by all scripts**. Gitignored. Never commit or share it. If login expired, the script waits up to 5 min for you to log in in the visible window.
 - `screenshots/` — failure screenshots, auto-written, gitignored, safe to delete.
 
+## Job-listing CSVs — store on the Desktop, NOT in this repo (added 2026-06-21)
+
+This repo is for LinkedIn outreach, but it's also used to scrape **job listings**
+from company career sites (Cisco, CVS, Applied Materials, PlayStation, EY, …) into
+small `<company>-jobs.csv` shortlists. **Those job CSVs belong in
+`~/Desktop/job-csvs/` (`/Users/viper/Desktop/job-csvs/`), not in this repo** — write
+any new job-listing CSV there, and that folder is the single consolidated home for
+all of them.
+
+**Do NOT confuse them with the outreach CSVs that DO live here** — `targets*.csv`,
+`already-messaged.csv`, `removed.csv` are **people** (url / firstName / company /
+note columns), whereas a job CSV has job columns (title / location / req_id /
+apply_url / why_it_fits). When asked to "find the job CSVs," verify by header, not
+filename.
+
 ## connect.js — how it works
 
 ```bash
