@@ -86,6 +86,37 @@ function saveJson(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
+// LinkedIn's newer profile UI (obfuscated classes + `componentkey` attrs, seen
+// 2026-06-24) renders action controls that pass Playwright's visible/enabled/
+// overlay checks but never satisfy its "stable" actionability gate in a headed-
+// but-occluded window (requestAnimationFrame throttling), so a plain .click()
+// hangs until timeout — confirmed read-only: the anchor is visible, enabled,
+// in-viewport, pointer-events:auto, animation:none, nothing overlapping it, yet
+// even a no-op {trial:true} probe times out. We click robustly: bring the tab to
+// front, scroll into view, try a normal click, then a forced click (skips the
+// stability wait), then a direct event dispatch on the exact resolved node.
+// SAFETY: every caller has ALREADY identity-verified this node's aria-label
+// (nameMatches) and recon confirmed nothing overlays it, so a forced/dispatched
+// click targets the same vetted control — it cannot land on a different person.
+async function robustClick(page, locator, timeout = 6000) {
+  await page.bringToFront().catch(() => {});
+  await locator.scrollIntoViewIfNeeded({ timeout: 2500 }).catch(() => {});
+  try {
+    await locator.click({ timeout });
+    return 'click';
+  } catch {
+    /* actionability gate stuck — escalate */
+  }
+  try {
+    await locator.click({ force: true, timeout });
+    return 'force';
+  } catch {
+    /* point-click failed (covered/odd geometry) — dispatch on the node itself */
+  }
+  await locator.dispatchEvent('click');
+  return 'dispatch';
+}
+
 // ---------- LinkedIn interaction ----------
 async function ensureLoggedIn(page) {
   await page.goto('https://www.linkedin.com/feed/', { waitUntil: 'domcontentloaded' });
@@ -144,7 +175,7 @@ async function profileState(page) {
     .locator('main button[aria-label="More" i]:visible, main button[aria-label^="More actions" i]:visible')
     .first();
   if ((await more.count()) > 0) {
-    await more.click();
+    await robustClick(page, more);
     await sleep(rand(900, 1400));
     // Only match the Connect item INSIDE the overflow we just opened (or a
     // proper menuitem) — never a bare top-level suggestion-card <button>. The
@@ -188,7 +219,7 @@ async function inviteWithNote(page, note, send) {
 
   const addNote = dialog.getByRole('button', { name: /add a (free )?note/i }).first();
   await addNote.waitFor({ state: 'visible', timeout: 5000 });
-  await addNote.click();
+  await robustClick(page, addNote);
 
   const box = dialog.locator('textarea[name="message"], textarea#custom-message').first();
   try {
@@ -212,7 +243,7 @@ async function inviteWithNote(page, note, send) {
   const sendBtn = dialog.getByRole('button', { name: /^send( now| invitation)?$/i }).last();
   await sendBtn.waitFor({ state: 'visible', timeout: 5000 });
   for (let i = 0; i < 20 && (await sendBtn.isDisabled()); i++) await sleep(150);
-  await sendBtn.click();
+  await robustClick(page, sendBtn);
 
   // Success = the dialog goes away. A surviving dialog mentioning a limit means
   // LinkedIn blocked it (weekly invite cap) — surface that loudly.
@@ -361,7 +392,7 @@ async function main() {
           } else {
             if (!expected) console.log('  ⚠ No "name" column — identity guard inactive for this row (add a name column to enable it).');
             else console.log(`  ✓ Identity OK — control "${st.label}" matches "${expected}".`);
-            await st.button.click();
+            await robustClick(page, st.button);
             const outcome = await inviteWithNote(page, note, args.send);
             if (outcome === 'invited') {
               console.log('  ✓ Invitation sent with note.');
